@@ -4,9 +4,12 @@
 #include <string_view>
 
 
-std::wstring_view pipe = L"\\\\.\\pipe\\PipeCom";
-int ToSend;
-DWORD NumofBytes;
+constexpr std::wstring_view pipe = L"\\\\.\\pipe\\PipeCom";
+
+namespace g_vars {
+	int ToSend;
+	DWORD NumofBytes;
+}
 
 struct HandleDisposer
 {
@@ -21,20 +24,21 @@ struct HandleDisposer
 };
 
 
-
 int main() {
 	
 		auto hpipe = std::unique_ptr<HANDLE, HandleDisposer>(CreateFileW(pipe.data(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL));
-		if (hpipe)
+		if (hpipe.get() == INVALID_HANDLE_VALUE || nullptr)
+			return 0;
+		else
 			std::cout << "[+] connected to pipe server !" << std::endl;
 	    
 		do
 		{
 			std::cout << "Enter an integer to send!" << std::endl;
-			std::cin >> ToSend;
-			WriteFile(hpipe.get(), &ToSend, sizeof(ToSend), &NumofBytes, NULL);
-		} while (ToSend != 0);
+			std::cin >> g_vars::ToSend;
+			WriteFile(hpipe.get(), &g_vars::ToSend, sizeof(g_vars::ToSend), &g_vars::NumofBytes, NULL);
+		} while (g_vars::ToSend != 0);
 	
 
-	system("pause");
+		std::cin.get();
 }

@@ -5,9 +5,13 @@
 
 
 #define BUFSIZE 512
-int buffer;
-DWORD NumofBytes;
-std::wstring_view PipeName = L"\\\\.\\pipe\\PipeCom";
+
+constexpr std::wstring_view PipeName = L"\\\\.\\pipe\\PipeCom";
+
+namespace g_vars {
+	int buffer;
+	DWORD NumofBytes;
+}
 
 
 
@@ -38,7 +42,7 @@ int main() {
 		0, 
 		NULL));
 
-	if (!hpipe)
+	if (hpipe.get() == INVALID_HANDLE_VALUE || nullptr)
 		return 0;
 		
 	std::cout << "[+] HANDLE created : " << hpipe << std::endl;
@@ -46,12 +50,11 @@ int main() {
 
 	if (ConnectNamedPipe(hpipe.get(), NULL != FALSE)) {
 		std::cout << "[+] A client has been connected to the pipe!" << std::endl;
-		while (ReadFile(hpipe.get(), &buffer, sizeof(buffer), &NumofBytes, NULL) != FALSE) {	
-			std::cout << "int : " << buffer << std::endl;
+		while (ReadFile(hpipe.get(), &g_vars::buffer, sizeof(g_vars::buffer), &g_vars::NumofBytes, NULL) != FALSE) {
+			std::cout << "int : " << g_vars::buffer << std::endl;
 		}
 	}
 	
-	system("pause");
+	std::cin.get();
 	DisconnectNamedPipe(hpipe.get());
-	return 0;
 }
