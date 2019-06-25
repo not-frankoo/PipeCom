@@ -8,10 +8,7 @@
 
 constexpr std::wstring_view PipeName = L"\\\\.\\pipe\\PipeCom";
 
-namespace g_vars {
-	int buffer;
-	DWORD NumofBytes;
-}
+
 
 
 
@@ -31,6 +28,9 @@ struct HandleDisposer
 
 
 int main() {
+
+	int buffer = 0;
+	DWORD NumofBytes = 0;
 	
 	auto hpipe = std::unique_ptr<HANDLE, HandleDisposer>(
 		CreateNamedPipeW(
@@ -50,8 +50,8 @@ int main() {
 
 	if (ConnectNamedPipe(hpipe.get(), NULL != FALSE)) {
 		std::cout << "[+] A client has been connected to the pipe!" << std::endl;
-		while (ReadFile(hpipe.get(), &g_vars::buffer, sizeof(g_vars::buffer), &g_vars::NumofBytes, NULL) != FALSE) {
-			std::cout << "int : " << g_vars::buffer << std::endl;
+		while (ReadFile(hpipe.get(), &buffer, sizeof(buffer), &NumofBytes, NULL) != FALSE) {
+			std::cout << "int : " << buffer << std::endl;
 		}
 	}
 	
