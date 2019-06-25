@@ -4,7 +4,7 @@
 #include <string_view>
 
 
-constexpr std::wstring_view pipe = L"\\\\.\\pipe\\PipeCom";
+
 
 
 
@@ -23,11 +23,12 @@ struct HandleDisposer
 
 int main() {
 
+	constexpr std::wstring_view pipe = L"\\\\.\\pipe\\PipeCom";
 	int ToSend = 0;
 	DWORD NumofBytes = 0;
 	
 		auto hpipe = std::unique_ptr<HANDLE, HandleDisposer>(CreateFileW(pipe.data(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL));
-		if (hpipe.get() == INVALID_HANDLE_VALUE || nullptr)
+		if (hpipe.get() == INVALID_HANDLE_VALUE)
 			return 0;
 		else
 			std::cout << "[+] connected to pipe server !" << std::endl;

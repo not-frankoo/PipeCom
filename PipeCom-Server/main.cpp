@@ -6,7 +6,7 @@
 
 #define BUFSIZE 512
 
-constexpr std::wstring_view PipeName = L"\\\\.\\pipe\\PipeCom";
+
 
 
 
@@ -29,6 +29,7 @@ struct HandleDisposer
 
 int main() {
 
+	constexpr std::wstring_view PipeName = L"\\\\.\\pipe\\PipeCom";
 	int buffer = 0;
 	DWORD NumofBytes = 0;
 	
@@ -42,7 +43,7 @@ int main() {
 		0, 
 		NULL));
 
-	if (hpipe.get() == INVALID_HANDLE_VALUE || nullptr)
+	if (hpipe.get() == INVALID_HANDLE_VALUE)
 		return 0;
 		
 	std::cout << "[+] HANDLE created : " << hpipe << std::endl;
